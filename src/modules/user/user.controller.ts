@@ -1,6 +1,37 @@
 import { NextFunction, Request, Response } from "express";
-import { registerOrganizationUser } from "./user.service";
+import {
+  getUserById,
+  getUsers,
+  registerOrganizationUser,
+} from "./user.service";
 import { RegisterOrganizationUserInput } from "./user.schema";
+
+export const getUsersController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const users = await getUsers();
+    return res.status(201).json({ message: "Success", data: users });
+  } catch (error) {
+    return res.status(500).json({ message: JSON.stringify(error) });
+  }
+};
+
+export const getUserByIdController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  try {
+    const user = await getUserById(id);
+    return res.status(201).json({ message: "Success", data: user });
+  } catch (error) {
+    return res.status(500).json({ message: JSON.stringify(error) });
+  }
+};
 
 export const registerOrganizationUserController = async (
   req: Request<{}, {}, RegisterOrganizationUserInput>,
