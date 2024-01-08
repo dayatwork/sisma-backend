@@ -10,11 +10,172 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum OrganizationType {
+  HEALTHCARE_PROVIDER
+  GOVERNMENT
+  SUPPLIER
+}
+
+model Organization {
+  id                  String           @id @default(cuid())
+  name                String
+  type                OrganizationType
+  logo                String?
+  province            String?
+  city                String?
+  district            String?
+  subdistrict         String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  users               User[]
+  locations           Location[]
+  suppliedDeviceNames DeviceName[]
+  ownedDevices        Device[]
+  sensors             Sensor[]
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  ORGANIZATION_ADMIN
+  ORGANIZATION_USER
+}
+
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  address   String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String        @id @default(cuid())
+  name           String
+  email          String        @unique
+  password       String?
+  photo          String?
+  role           Role
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+  isActive       Boolean
+  verifiedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model VerificationToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+enum LocationForm {
+  BUILDING
+  WING
+  WARD
+  LEVEL
+  CORRIDOR
+  ROOM
+  BED
+  VEHICLE
+  CABINET
+}
+
+enum LocationStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+model Location {
+  id             String         @id @default(cuid())
+  identifier     String
+  name           String
+  description    String?
+  status         LocationStatus
+  form           LocationForm?
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+  organizationId String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  devices        Device[]
+  sensors        Sensor[]
+}
+
+model DeviceName {
+  id             String          @id @default(cuid())
+  code           String
+  name           String
+  description    String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  supplier       Organization    @relation(fields: [supplierId], references: [id])
+  supplierId     String
+  photos         DevicePhoto[]
+  spesifications Spesification[]
+  devices        Device[]
+}
+
+model DevicePhoto {
+  id           String     @id @default(cuid())
+  deviceName   DeviceName @relation(fields: [deviceNameId], references: [id])
+  deviceNameId String
+  url          String
+  caption      String?
+}
+
+model Spesification {
+  id           String     @id @default(cuid())
+  deviceName   DeviceName @relation(fields: [deviceNameId], references: [id])
+  deviceNameId String
+  group        String
+  number       String
+  name         String
+  value        Json?
+
+  @@unique([deviceNameId, number])
+  @@unique([deviceNameId, name])
+}
+
+enum DeviceStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum AvailabilityStatus {
+  LOST
+  DAMAGED
+  DESTROYED
+  AVAILABLE
+}
+
+model Device {
+  id                 String             @id @default(cuid())
+  deviceName         DeviceName         @relation(fields: [deviceNameId], references: [id])
+  deviceNameId       String
+  owner              Organization       @relation(fields: [ownerId], references: [id])
+  ownerId            String
+  location           Location?          @relation(fields: [locationId], references: [id])
+  locationId         String?
+  udi                String             @unique
+  lotNumber          String
+  serialNumber       String
+  expirationDate     DateTime
+  manufacturingDate  DateTime
+  status             DeviceStatus
+  availabilityStatus AvailabilityStatus
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  sensor             Sensor?
+}
+
+model Sensor {
+  id             String       @id @default(cuid())
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  location       Location     @relation(fields: [locationId], references: [id])
+  locationId     String
+  device         Device?      @relation(fields: [deviceId], references: [id])
+  deviceId       String?      @unique
+  identifier     String
+  type           String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
