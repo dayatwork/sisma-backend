@@ -6,7 +6,7 @@ export type AccessTokenPayload = {
   id: string;
   name: string;
   email: string;
-  organizationId: string;
+  organizationId: string | null;
   role: Role;
 };
 

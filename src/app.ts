@@ -4,6 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+import authRoutes from "./modules/auth/auth.routes";
 import userRoutes from "./modules/user/user.routes";
 import organizationRoutes from "./modules/organization/organization.routes";
 
@@ -20,6 +21,7 @@ app.use(
 );
 app.use(cookieParser());
 
+app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/organizations", organizationRoutes);
 
@@ -40,32 +42,3 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 export default app;
-
-// LOGIN
-// app.post("/login", async (req, res, next) => {
-//   const { email, password } = req.body;
-
-//   const user = await prisma.user.findUnique({ where: { email } });
-//   if (!user || !user.password) {
-//     return res.status(400).json({ message: "Invalid credentials" });
-//   }
-
-//   const passwordMatch = await bcrypt.compare(password, user.password);
-//   if (!passwordMatch) {
-//     return res.status(400).json({ message: "Invalid credentials" });
-//   }
-
-//   const jwtPayload = {
-//     id: user.id,
-//     name: user.name,
-//     email: user.email,
-//   };
-//   const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET!);
-
-//   return res.json({
-//     message: "You are logged in!",
-//     data: {
-//       accessToken,
-//     },
-//   });
-// });

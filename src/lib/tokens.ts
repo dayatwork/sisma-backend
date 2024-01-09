@@ -1,7 +1,9 @@
 import ShortUniqueId from "short-unique-id";
+import jwt from "jsonwebtoken";
 
 import { getVerificationTokenByEmail } from "../modules/auth/auth.service";
 import prisma from "./prisma";
+import { AccessTokenPayload } from "../middlewares/auth";
 
 export const generateVerificationToken = async (email: string) => {
   const uid = new ShortUniqueId({ length: 10 });
@@ -19,4 +21,9 @@ export const generateVerificationToken = async (email: string) => {
   });
 
   return verificationToken;
+};
+
+export const generateAccessToken = (payload: AccessTokenPayload) => {
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET!);
+  return accessToken;
 };
