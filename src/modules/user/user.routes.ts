@@ -4,6 +4,7 @@ import { validate } from "../../middlewares/validate";
 import { ensureLoggedIn, ensureUserRole } from "../../middlewares/auth";
 import { registerOrganizationUserSchema } from "./user.schema";
 import {
+  changePasswordController,
   getUserByIdController,
   getUsersController,
   registerOrganizationUserController,
@@ -19,5 +20,6 @@ router.post(
 );
 router.get("/", ensureLoggedIn, getUsersController);
 router.get("/:id", ensureLoggedIn, getUserByIdController);
+router.patch("/change-password", ensureLoggedIn, changePasswordController);
 
 export default router;

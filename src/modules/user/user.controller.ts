@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  changePassword,
   getUserById,
   getUsers,
   registerOrganizationUser,
 } from "./user.service";
-import { RegisterOrganizationUserInput } from "./user.schema";
+import {
+  ChangePasswordInput,
+  RegisterOrganizationUserInput,
+} from "./user.schema";
+import { AccessTokenPayload } from "../../middlewares/auth";
 
 export const getUsersController = async (
   req: Request,
@@ -53,6 +58,23 @@ export const registerOrganizationUserController = async (
     }
     const { password, ...data } = user;
     return res.status(201).json({ message: "User created", data });
+  } catch (error) {
+    return res.status(500).json({ message: JSON.stringify(error) });
+  }
+};
+
+export const changePasswordController = async (
+  req: Request<{}, {}, ChangePasswordInput>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { newPassword, oldPassword } = req.body;
+  const user = res.locals.user as AccessTokenPayload;
+
+  try {
+    await changePassword({ id: user.id, newPassword, oldPassword });
+
+    return res.status(200).json({ message: "Password changed!" });
   } catch (error) {
     return res.status(500).json({ message: JSON.stringify(error) });
   }

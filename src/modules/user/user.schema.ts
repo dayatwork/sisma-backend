@@ -15,3 +15,14 @@ export const registerOrganizationUserSchema = z.object({
 export type RegisterOrganizationUserInput = z.TypeOf<
   typeof registerOrganizationUserSchema
 >["body"];
+
+export const changePasswordSchema = z.object({
+  body: z.object({
+    oldPassword: z.string({ required_error: "Old password is required" }),
+    newPassword: z
+      .string({ required_error: "New password is required" })
+      .min(6),
+  }),
+});
+
+export type ChangePasswordInput = z.TypeOf<typeof changePasswordSchema>["body"];
