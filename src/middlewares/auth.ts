@@ -17,11 +17,15 @@ export const ensureLoggedIn = (
 ) => {
   const { authorization } = req.headers;
 
-  if (!authorization || !authorization.startsWith("Bearer")) {
+  if (
+    (!authorization || !authorization.startsWith("Bearer")) &&
+    !req.cookies["accessToken"]
+  ) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const accessToken = authorization.split(" ")[1];
+  const accessToken =
+    req.cookies["accessToken"] || authorization?.split(" ")[1];
 
   try {
     const jwtDecode = jwt.verify(
