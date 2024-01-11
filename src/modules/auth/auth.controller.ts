@@ -97,3 +97,22 @@ export const getLoggedInUser = async (
     return res.status(500).json({ message: "Something went wrong!" });
   }
 };
+
+export const logoutController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    res.cookie("accessToken", null, {
+      httpOnly: true,
+      maxAge: 0,
+    });
+
+    return res.json({
+      message: "You are logged out!",
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong!" });
+  }
+};
