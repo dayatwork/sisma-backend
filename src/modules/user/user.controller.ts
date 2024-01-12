@@ -17,7 +17,6 @@ export const getUsersController = async (
   next: NextFunction
 ) => {
   try {
-    console.log("user", res.locals.user);
     const users = await getUsers();
     return res.status(201).json({ message: "Success", data: users });
   } catch (error) {

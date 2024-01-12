@@ -16,3 +16,13 @@ export const createOrganizationSchema = z.object({
 export type CreateOrganizationInput = z.TypeOf<
   typeof createOrganizationSchema
 >["body"];
+
+export const getOrganizationsSchema = z.object({
+  query: z.object({
+    search: z.string().optional(),
+  }),
+});
+
+export type GetOrganizationsQuery = z.TypeOf<
+  typeof getOrganizationsSchema
+>["query"];

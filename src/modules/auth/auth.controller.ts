@@ -29,6 +29,9 @@ export const loginController = async (
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
+      sameSite: "lax",
+      secure: true,
+      path: "/",
     });
 
     return res.json({

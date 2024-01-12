@@ -1,17 +1,21 @@
 import { OrganizationType } from "@prisma/client";
 import prisma from "../../lib/prisma";
 import { CreateOrganizationInput } from "./organization.schema";
+import ShortUniqueId from "short-unique-id";
 
 // ========================
 // ======= QUERIES ========
 // ========================
-export async function getOrganizations(where?: {
-  types?: OrganizationType[];
-  province?: string;
-  city?: string;
-}) {
+export async function getOrganizations(params?: { search?: string }) {
   const organizations = await prisma.organization.findMany({
-    where: where,
+    where: params?.search
+      ? {
+          OR: [
+            { code: { contains: params.search, mode: "insensitive" } },
+            { name: { contains: params.search, mode: "insensitive" } },
+          ],
+        }
+      : undefined,
   });
   return organizations;
 }
@@ -25,6 +29,9 @@ export async function getOrganizationById(id: string) {
 // ======= MUTATIONS ========
 // ==========================
 export async function createOrganization(input: CreateOrganizationInput) {
-  const organization = await prisma.organization.create({ data: input });
+  const uid = new ShortUniqueId({ length: 8 });
+  const organization = await prisma.organization.create({
+    data: { code: uid.rnd(), ...input },
+  });
   return organization;
 }

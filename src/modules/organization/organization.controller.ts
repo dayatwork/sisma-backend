@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { CreateOrganizationInput } from "./organization.schema";
+import {
+  CreateOrganizationInput,
+  GetOrganizationsQuery,
+} from "./organization.schema";
 import {
   createOrganization,
   getOrganizationById,
@@ -7,12 +10,13 @@ import {
 } from "./organization.service";
 
 export const getOrganizationsController = async (
-  req: Request,
+  req: Request<{}, {}, {}, GetOrganizationsQuery>,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const organizations = await getOrganizations();
+    const { search } = req.query;
+    const organizations = await getOrganizations({ search });
     return res.status(201).json({ message: "Success", data: organizations });
   } catch (error) {
     return res.status(500).json({ message: JSON.stringify(error) });

@@ -20,6 +20,7 @@ model Organization {
   id                  String           @id @default(cuid())
   name                String
   type                OrganizationType
+  code                String           @unique
   logo                String?
   province            String?
   city                String?
