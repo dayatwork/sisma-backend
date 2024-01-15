@@ -17,7 +17,9 @@ router.post(
   ensureUserRole(["SUPER_ADMIN", "ADMIN"]),
   createOrganizationController
 );
-router.get("/", ensureLoggedIn, getOrganizationsController);
-router.get("/:id", ensureLoggedIn, getOrganizationByIdController);
+router.get("/", getOrganizationsController);
+router.get("/:id", getOrganizationByIdController);
+// router.get("/", ensureLoggedIn, getOrganizationsController);
+// router.get("/:id", ensureLoggedIn, getOrganizationByIdController);
 
 export default router;
